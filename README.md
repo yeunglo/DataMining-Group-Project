@@ -77,12 +77,17 @@ Useful Links
 The following list has some pointers to places where you might get some inspiration for data mining challenges together with associated data such as evaluation criteria and comparative performance data:
 
 https://www.kaggle.com - source of lots of different data mining competitions.
+
 http://www.drivendata.org - source of lots of different data mining competitions with an emphasis on saving the world.
 http://multimediaeval.org/datasets/ - a range of data and evaluation criteria for different types of data mining problems involving multimedia and multi-modal data.
+
 http://www.kdnuggets.com/competitions/past-competitions.html - list of past data mining competitions; data and evaluation criteria is likely to be available for many of these.
+
 http://webscope.sandbox.yahoo.com - publicly available research datasets from Yahoo!
+
 http://www.kdd.org/kdd-cup - KDD Cup is an annual data mining competition run by ACM SIG KDD; datasets, evaluation criteria, and info previous winners are available (note that the most recent competitions are actually hosted on kaggle.com).
 Questions
+
 If you have any problems/questions then email or speak to Jon in his office or after the lectures.
 
 Copyright ©2018 The University of Southampton. All rights reserved.
