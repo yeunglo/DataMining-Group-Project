@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 # 1st class: v[1]
 import operator
@@ -14,7 +13,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
 import numpy as np
-import graphviz
 stemmer = SnowballStemmer("english")
 
 
@@ -104,8 +102,8 @@ class Classification_JCL():
         #                                 filled=True, rounded=True,
         #                                 special_characters=True)
         dot_data = tree.export_graphviz(self.classifier, out_file=None)
-        graph = graphviz.Source(dot_data)
-        graph.render("identity_hate")
+        #graph = graphviz.Source(dot_data)
+        #graph.render("identity_hate")
         # def write_result(self):
     #     jsObj = json.dumps(self.result)
     #     fileObject = open('result_full.json', 'w')
@@ -132,7 +130,7 @@ if __name__ == '__main__':
     Test.Decision_Tree()
     #Test.plottree()
     #Test.write_result()
-=======
+
 
 # 1st class: v[1]
 import json
@@ -197,4 +195,4 @@ if __name__ == '__main__':
     Test.Decision_Tree()
     Test.write_result()
     # Test.Test()
->>>>>>> 76f9d80ebb4ca9fb4959eb9d3813c9cacad81316
+
