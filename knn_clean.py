@@ -61,6 +61,8 @@ min_df = [0, 0.1, 0.2, 0.3, 0.4]
 
 wordslist, labels_com = get_data(train_data)
 
+'''
+# find the best max and min value of tfidf.
 best_df_accuracy = 0
 for max in max_df:
     for min in min_df:
@@ -77,6 +79,6 @@ for max in max_df:
                 best_min_df = min
 
 print(best_max_df, best_min_df, best_df_accuracy)
-
+'''
 endtime = datetime.datetime.now()
 print((endtime - starttime).seconds)
