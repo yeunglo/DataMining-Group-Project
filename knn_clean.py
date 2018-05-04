@@ -13,7 +13,7 @@ from time import time
 
 labels = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
 
-with open('train_original_test.json') as Train_data:
+with open('train_original.json') as Train_data:
     train_data = json.load(Train_data)
 
 
@@ -41,7 +41,7 @@ def feature_extraction(data_str, case, max_df=1.0, min_df=0.0):
         data_str)
     return tfidf_matrix
 
-def split_data(input, random_state=5, shuffle=True):
+def split_data(input, random_state=1, shuffle=True):
     input_x, y = input
     # print input_x
     x_train, x_test, tag_train, tag_test = train_test_split(input_x, y, test_size=0.1, random_state=random_state)
@@ -49,8 +49,11 @@ def split_data(input, random_state=5, shuffle=True):
 
 def knn(n, x_train, x_test, tag_train, tag_test):
     estimator = KNeighborsClassifier(n)
+    print('estimator setup')
     estimator.fit(x_train, tag_train)
+    print('estimator done')
     tag_predicted = estimator.predict(x_test)
+    print('prediction done')
     accuracy = np.mean(tag_test == tag_predicted) * 100
     print('accuracy: {0: .3f}%'.format(accuracy))
     return accuracy
@@ -80,5 +83,24 @@ for max in max_df:
 
 print(best_max_df, best_min_df, best_df_accuracy)
 '''
+
+tfidf_matrix = feature_extraction(wordslist, 'tfidf', max_df=0.4, min_df=0)
+input = [tfidf_matrix, labels_com]
+x_train, x_test, tag_train, tag_test = split_data(input)
+
+'''
+# find the best k value
+best_k = 0
+best_accuracy = 0
+for n in range(1,51):
+    accuracy = knn(n, x_train, x_test, tag_train, tag_test)
+    if accuracy > best_accuracy:
+        best_k = n
+        best_accuracy = accuracy
+print(best_k, best_accuracy)
+'''
+
+accuracy = knn(10, x_train, x_test, tag_train, tag_test)
+
 endtime = datetime.datetime.now()
 print((endtime - starttime).seconds)
