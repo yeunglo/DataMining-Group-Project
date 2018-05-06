@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 
+
 import json
 import re
 import os
@@ -17,16 +18,19 @@ from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 from time import time
 from sklearn.model_selection import GridSearchCV
-from sklearn.manifold import MDS
+from sklearn.decomposition import PCA
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn import decomposition
 
+
+t0 = time()
 labels = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
 a = []
 data_list = []
 d=[]
 tag=[]
 tag_super=[]
-t0 = time()
+
 string=''
 string1=''
 string2=''
@@ -52,15 +56,27 @@ for item in a:
     # else:
     #     tag_super.append(0)
 words=[]
-
+stems=''
+#wordslist=[]
 path_full = 'C:/Users/admin/Desktop/dm-group/train.csv'
 with open(path_full) as Train:
     reader = csv.DictReader(Train)
     for line in reader:
         words.append((line['comment_text']))
+#
+# for item in words:
+#     # string = str(''.join(i for i in item))
+#     # string1 = string + ','
+#     # string2 += string1
+#     string = str(item)
+#     string1 = string + ','
+#     string2 += string1
+
 # data_str=string2.split(',')
 # data_str = data_str[:-1]
+#print data_str
 #data_str=[data_str]
+
 tag_str=tag
 #print tag_super
 #print data_str
@@ -74,13 +90,14 @@ def getwords(doc):
            if len(s)>2 and len(s)<20 and s not in stopworddic]
     stems = [stemmer.stem(t) for t in words]
     return dict([(w, stems.count(w)) for w in stems])
-def feature_extraction(words,case='tfidf', max_df=1.0, min_df=0.0):
+    #return stems
+def feature_extraction(words,case='tfidf', max_df=0.4, min_df=0):
     files = os.listdir('./')
     saved_file_name = 'doc_matrix_full.pkl'
     if saved_file_name not in files:
-        tfidf_vectorizer = TfidfVectorizer(max_df=1.0, max_features=250000, min_df=0.0, tokenizer=getwords,
+        tfidf_vectorizer = TfidfVectorizer(max_df=0.4, max_features=200000, min_df=0.01, tokenizer=getwords,
                                            stop_words='english',
-                                           use_idf=True, ngram_range=(1, 1))
+                                           use_idf=True, ngram_range=(1, 1),norm='l2')
         tfidf_matrix = tfidf_vectorizer.fit_transform(words)  # fit the vectorizer to synopses
         joblib.dump(tfidf_matrix, saved_file_name)
     else:
@@ -90,7 +107,8 @@ def feature_extraction(words,case='tfidf', max_df=1.0, min_df=0.0):
     return tfidf_matrix
 def fitandpredicted(x_train, x_test, tag_train, tag_test, penalty='l2',C=1,solver='lbfgs'):
     #clf = linear_model.LogisticRegressionCV(penalty='l2',class_weight='balanced', solver='lbfgs',multi_class='ovr').fit(x_train, tag_train)
-    clf = linear_model.LogisticRegressionCV(penalty='l2', solver='lbfgs').fit(x_train, tag_train)
+    #clf = linear_model.LogisticRegressionCV(penalty='l2', solver='newton-cg',n_jobs=1,intercept_scaling=1,max_iter=100).fit(x_train, tag_train)
+    clf = linear_model.LogisticRegressionCV( ).fit(x_train, tag_train)
     #clf = LogisticRegression(penalty='l2',class_weight='balanced',C=1.0, solver='lbfgs').fit(x_train, tag_train)
     #clf = LogisticRegression(penalty=penalty,C=C, solver=solver, n_jobs=-1).fit(x_train, tag_train)
     predicted = clf.predict(x_test)
@@ -98,10 +116,10 @@ def fitandpredicted(x_train, x_test, tag_train, tag_test, penalty='l2',C=1,solve
     print('accuracy_score: %0.5fs' % (metrics.accuracy_score(tag_test, predicted)))
 
 
-def split_data(input, random_state=10, shuffle=True):
+def split_data(input, random_state=15, shuffle=True):
     input_x, y = input
     #print input_x
-    x_train, x_test, tag_train, tag_test = train_test_split(input_x, y, test_size=0.2, random_state=random_state)
+    x_train, x_test, tag_train, tag_test = train_test_split(input_x, y, test_size=0.3, random_state=random_state)
     return  x_train, x_test, tag_train, tag_test
 
 
@@ -118,34 +136,52 @@ def train_and_predicted_with_graid(input, param_grid, cv=5):
         print('\t%s: %r' %(param_name, best_parameters[param_name]))
     return scores
 
-print('\t\tuse max_df,min_df=(1.0,0.0) to extract feature,then logistic regression:\t\t')
-max_df = [0.2, 0.4, 0.5, 0.8, 1.0, 1.5, 5]
-min_df = [0, 0.1, 0.2, 0.3, 0.4]
-#for i in min_df:
-    #print('With min_df=',i)
-# tfidf_matrix =feature_extraction(words,'tfidf',max_df=1.0,min_df=0)
+print('\t\tuse max_df,min_df=(0.4,0.0) to extract feature,then logistic regression:\t\t')
+#print(getwords(words))
+#print stems
+#max_df = [0.2, 0.4, 0.6, 0.8, 1.0]
+#min_df = [0, 0.1, 0.2, 0.3, 0.4]
+#stems=getwords(string2)
+#print stems[:3]
+#print('With min_df=',i)
+tfidf_matrix =feature_extraction(words,'tfidf')
+#print tfidf_matrix.type
+# dist = 1 - cosine_similarity(tfidf_matrix)
 # print('2')
+# pca = PCA(n_components=10000, whiten=True, random_state=0)
+# x = pca.fit_transform(dist)
+# n_comp = 500
+# svd = decomposition.TruncatedSVD(n_components=n_comp, algorithm='arpack')
+# svd.fit(tfidf_matrix)
 
-# #dist = 1 - cosine_similarity(tfidf_matrix)
-# # mds = MDS(n_components=1000, dissimilarity="precomputed", random_state=1)
-# # pos = mds.fit_transform(dist)
+# mds = MDS(n_components=10000, dissimilarity="precomputed", random_state=1)
+# pos = mds.fit_transform(dist)
 
-# # print('2222')
-# input=[tfidf_matrix,tag_str]
-# x_train, x_test, tag_train, tag_test = split_data(input)
+print(tfidf_matrix.shape)
+# n_comp = 100
+# svd = decomposition.TruncatedSVD(n_components='n_comp')
+tf=tfidf_matrix.toarray()
+# x=svd.fit(tf)
+pca = PCA(n_components=100, whiten=True, random_state=0)
+x=pca.fit_transform(tf)
+input=[x,tag_str]
+x_train, x_test, tag_train, tag_test = split_data(input)
 # print('222')
-# fitandpredicted(x_train, x_test, tag_train, tag_test)
-# print('time uesed: %0.4fs' %(time() - t0))
 
 
-C= [0.1, 0.2, 0.5, 0.8, 1.5, 3, 5]
-fit_intercept=[True, False]
-penalty=['l2']
-solver=['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']
-param_grid=dict(C=C, fit_intercept=fit_intercept, penalty=penalty, solver=solver)
-tfidf_matrix = feature_extraction(words, 'tfidf', max_df=1, min_df=0.0)
-input=[tfidf_matrix,tag_str]
+# # xtrain = pca.fit_transform(x_train)
+fitandpredicted(x_train, x_test, tag_train, tag_test)
+print('time uesed: %0.4fs' %(time() - t0))
 
-scores = train_and_predicted_with_graid(input, cv=5, param_grid=param_grid)
+
+# C= [0.1, 0.2, 0.5, 0.8, 1.5, 3, 5]
+# fit_intercept=[True, False]
+# penalty=['l2']
+# solver=['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']
+# param_grid=dict(C=C, fit_intercept=fit_intercept, penalty=penalty, solver=solver)
+# tfidf_matrix = feature_extraction(words, 'tfidf', max_df=1, min_df=0.0)
+# input=[tfidf_matrix,tag_str]
+#
+# scores = train_and_predicted_with_graid(input, cv=5, param_grid=param_grid)
 
 
