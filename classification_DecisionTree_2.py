@@ -1,22 +1,31 @@
+
 import operator
 import csv
 import re
 import os
+import json
 from sklearn.externals import joblib
 from sklearn.decomposition import PCA
 from sklearn import tree
+from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
+
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedShuffleSplit
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import CondensedNearestNeighbour
 from imblearn.under_sampling import RandomUnderSampler
+
+import numpy as np
+
 stemmer = SnowballStemmer("english")
+
 
 def getwords(doc):
     splitter = re.compile('\\W+[0-9]*') # split with non-words
+    #print(splitter)
     stopworddic = set(stopwords.words('english'))
     words=[s.lower() for s in splitter.split(doc)
            if len(s)>2 and len(s)<20 and s not in stopworddic]
@@ -32,17 +41,23 @@ class Classification_JCL():
         #self.key = []
         self.result = []
         self.classifier = None
+
         self.train_data = None
         self.test_data = None
         self.train_target = None
         self.test_target = None
+
     def read_csv(self):
+        comment = {}
+        path_test = 'C:\Users\home\Documents\GitHub\DataMining-Group-Project\\train1.csv'
         path_full = 'C:\Users\home\Documents\Data Mining\\toxic comment\\train.csv'
         with open(path_full) as Train:
             reader = csv.DictReader(Train)
             #labels = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
             for line in reader:
+
                 self.words.append((line['comment_text']))
+
                 self.target.append(float(line['toxic']))
 
     def tf_idf(self):
@@ -56,7 +71,7 @@ class Classification_JCL():
         else:
             tfidf_matrix = joblib.load(saved_file_name)
         self.vec = tfidf_matrix
-        #print self.vec.shape
+
 
     def Decision_Tree(self):
         clf = tree.DecisionTreeClassifier()
@@ -122,3 +137,5 @@ if __name__ == '__main__':
     Test.balance_smote()
     #Test.balance_rus()
     Test.Decision_Tree()
+
+
