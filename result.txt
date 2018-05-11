@@ -1,0 +1,61 @@
+Toxic:
+decision tree
+RandomUnderSampler with PCA(n_f:100)
+             precision    recall  f1-score   support
+
+        0.0       0.72      0.68      0.70      1526
+        1.0       0.70      0.73      0.71      1533
+
+avg / total       0.71      0.71      0.71      3059
+
+
+SMOTE with PCA(n_feature: 100)
+             precision    recall  f1-score   support
+
+        0.0       0.88      0.82      0.85     14362
+        1.0       0.83      0.89      0.86     14494
+
+avg / total       0.86      0.85      0.85     28856
+
+running time is 222.8s
+
+SMOTE without PCA(n_feature:441)
+             precision    recall  f1-score   support
+
+        0.0       0.93      0.87      0.90     14362
+        1.0       0.88      0.94      0.91     14494
+
+avg / total       0.91      0.91      0.91     28856
+
+running time is 428.2s
+
+lightgbm 
+with rus
+             precision    recall  f1-score   support
+
+        0.0       0.77      0.72      0.75      1526
+        1.0       0.74      0.79      0.76      1533
+
+avg / total       0.76      0.76      0.76      3059
+
+running time is 4.113s
+
+with smote
+             precision    recall  f1-score   support
+
+        0.0       0.81      0.76      0.79     14362
+        1.0       0.78      0.83      0.80     14494
+
+avg / total       0.80      0.79      0.79     28856
+
+time uesed: 123.2320s
+
+without smote (9:1)
+             precision    recall  f1-score   support
+
+        0.0       0.93      1.00      0.96     14446
+        1.0       0.93      0.28      0.44      1512
+
+avg / total       0.93      0.93      0.91     15958
+
+time uesed: 3.9350s
